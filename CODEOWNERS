@@ -1,0 +1,4 @@
+# Who must approve a change. Each product file: that product's owners (the owners: list in it).
+# Everything else: DevSecOps. In this sandbox both are the org owner.
+*                   @edward-obeng
+/teams/demo.yaml    @edward-obeng

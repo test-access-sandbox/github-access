@@ -1,0 +1,4 @@
+# Settings for the scripts in scripts/. The product files are in teams/.
+org: test-access-sandbox
+request_repo: access-requests      # where people request access
+everyone_team: everyone            # every org member, kept in sync; gives Read on request_repo

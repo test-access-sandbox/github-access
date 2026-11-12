@@ -1,0 +1,32 @@
+# A request's pull request was closed without merging: tell the requester why, and close the request.
+name: declined
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  declined:
+    if: github.event.pull_request.merged == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - run: pip install --quiet pyyaml
+
+      - uses: actions/create-github-app-token@v1
+        id: app
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Tell the requester
+        run: python scripts/access.py declined ${{ github.event.pull_request.number }}
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}

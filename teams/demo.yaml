@@ -1,0 +1,41 @@
+# github-access/teams/demo.yaml
+# Sandbox pilot. Dummy data only: this repository is public.
+product: demo
+description: Pretend product for the access-as-code pilot
+
+# 1. OWNERS: approve requests for this product. Not a team; no repository access by itself.
+owners: [edward-obeng]
+
+# Repositories that developers may only read.
+infrastructure: [demo-infra]
+
+# 2. PEOPLE: everyone named in this file, with their work email, written once.
+people:
+  edward-obeng: edward.obeng@example.com
+
+# 3. TEAMS: each GitHub team by its full name, what it reaches, and who is in it.
+teams:
+  demo:                          # parent: read on every repository
+    permission: read
+    repositories: [demo-frontend, demo-api, demo-infra]
+    members: []
+
+  demo-developers:
+    parent: demo
+    permission: write
+    repositories: [demo-frontend, demo-api]   # not the infra repo
+    members: []
+
+  demo-maintainers:              # 1 to 3
+    parent: demo
+    permission: maintain
+    repositories: [demo-frontend, demo-api, demo-infra]
+    members: []
+
+  demo-admins:                   # 2 at most
+    parent: demo
+    permission: admin
+    repositories: [demo-frontend, demo-api, demo-infra]
+    members: []
+
+outside_collaborators: []   # the only direct grants: write at most, with sponsor, reason, expires

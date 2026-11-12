@@ -1,0 +1,31 @@
+# On every pull request: check the rules, then post what merging it would change in GitHub.
+name: checks
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: pip install --quiet pyyaml
+
+      - name: Check the rules
+        run: python scripts/access.py check
+
+      - uses: actions/create-github-app-token@v1
+        id: app
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Preview the changes in GitHub
+        run: python scripts/access.py plan --comment-pr ${{ github.event.pull_request.number }}
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}

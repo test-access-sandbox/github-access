@@ -1,0 +1,36 @@
+# Make GitHub match the files: after every merge, every morning (to undo changes made by hand), or on demand.
+name: apply
+on:
+  push:
+    branches: [main]
+    paths: ["teams/**", "config.yaml"]
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: pip install --quiet pyyaml
+
+      - uses: actions/create-github-app-token@v1
+        id: app
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Apply
+        run: python scripts/access.py apply ${{ github.event_name == 'push' && format('--notify {0}', github.sha) || '' }}
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
