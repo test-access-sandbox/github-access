@@ -224,7 +224,8 @@ MEMBERS_Q = """query($org: String!, $slug: String!) { organization(login: $org) 
 def current(cfg, managed):
     """What GitHub looks like now, for the parts the files manage."""
     org = cfg["org"]
-    now = {"members": {m["login"] for m in pages(f"/orgs/{org}/members")}, "teams": {}, "repos": {},
+    now = {"members": {m["login"] for m in pages(f"/orgs/{org}/members")},
+           "owners": {m["login"] for m in pages(f"/orgs/{org}/members?role=admin")}, "teams": {}, "repos": {},
            "direct": {}, "invites": {}, "existing_repos": {r["name"] for r in pages(f"/orgs/{org}/repos?type=all")}}
     for t in pages(f"/orgs/{org}/teams"):
         team = graphql(MEMBERS_Q, org=org, slug=t["slug"])["organization"]["team"]
@@ -287,7 +288,7 @@ def plan(cfg, files):
             if login not in want:
                 steps.append((f"Remove @{login} from `{slug}` (not in the file)",
                               lambda s=slug, u=login: call("DELETE", f"/orgs/{org}/teams/{s}/memberships/{u}")))
-            elif role == "MAINTAINER":
+            elif role == "MAINTAINER" and login not in now["owners"]:  # GitHub makes org owners maintainers
                 steps.append((f"Make @{login} a plain member of `{slug}` (the team-maintainer role is not used)",
                               lambda s=slug, u=login: call("PUT", f"/orgs/{org}/teams/{s}/memberships/{u}", {"role": "member"})))
 
