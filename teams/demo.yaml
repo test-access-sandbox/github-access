@@ -11,7 +11,7 @@ infrastructure: [demo-infra]
 
 # 2. PEOPLE: everyone named in this file, with their work email, written once.
 people:
-  edward-obeng: edward.obeng@example.com
+  edward-obeng: asta@example.com
 
 # 3. TEAMS: each GitHub team by its full name, what it reaches, and who is in it.
 teams:
@@ -24,7 +24,7 @@ teams:
     parent: demo
     permission: write
     repositories: [demo-frontend, demo-api]   # not the infra repo
-    members: []
+    members: [edward-obeng]
 
   demo-maintainers:              # 1 to 3
     parent: demo
